@@ -279,12 +279,13 @@ The ceiling for this dataset appears to be approximately **2.95–2.99** on the 
 - ~~PoissonRegressor~~ — Test 3.025, wrong distributional assumption
 - ~~Tree-based / AutoML~~ — Public 3.05+, overfit on 1,812 samples
 - ~~60-40 QR-weighted average~~ — Public 3.016, equal weight is critical
+- ~~Target transformation (W/G)~~ — No improvement; engineered rate features already normalise for season length/era
 
 ## Remaining Plausible Directions
 
 1. **Three-model average (QR + ElasticNet + Ridge)** — Ridge makes different errors from both QR and ElasticNet. A three-way equal average could cancel more noise. Free to try — all submission files exist.
 
-2. **Target transformation** — Predict win percentage (W/G) then multiply back by G. Normalises across season lengths and eras.
+2. ~~**Target transformation**~~ — Predict win percentage (W/G) then multiply back by G. Did not improve MAE; per-game rate features and era dummies already normalise for season length and era, making the transformation redundant.
 
 3. **Stability selection** — Bootstrap ElasticNet many times, keep features selected in >80% of runs. More robust feature selection than a single L1 fit.
 
