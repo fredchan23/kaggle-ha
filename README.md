@@ -280,6 +280,21 @@ The ceiling for this dataset appears to be approximately **2.95–2.99** on the 
 - ~~Tree-based / AutoML~~ — Public 3.05+, overfit on 1,812 samples
 - ~~60-40 QR-weighted average~~ — Public 3.016, equal weight is critical
 - ~~Target transformation (W/G)~~ — No improvement; engineered rate features already normalise for season length/era
+- ~~PCA on hitting stats~~ — All variants within 0.003 of baseline; ElasticNet L1 already handles multicollinearity
+
+### PCA on Correlated Hitting Stats — No Improvement
+
+Tested PCA compression of `[H, 2B, 3B, HR, BB]` (correlations: H↔2B 0.72, 3B↔HR −0.64) with two strategies (augment originals+PCA, replace originals with PCA) and two component counts (3 fixed, 0.95 variance threshold).
+
+| Strategy | Features | EN test MAE | EN CV MAE | Hub test MAE | Hub CV MAE |
+|----------|----------|-------------|-----------|--------------|------------|
+| Baseline (no PCA) | 68 | 2.8015 | 2.7055 | 2.7991 | 2.6954 |
+| A – Augment (3 PC) | 71 | 2.8015 | 2.7055 | 2.7991 | 2.6954 |
+| B – Replace (3 PC) | 66 | 2.8024 | 2.7062 | 2.8034 | 2.6933 |
+| A – Augment (95% var) | 72 | 2.8012 | 2.7055 | 2.8025 | 2.6970 |
+| B – Replace (95% var) | 67 | 2.8004 | 2.7056 | 2.8021 | 2.6970 |
+
+**Why PCA did NOT help:** All deltas are < 0.003 — well within CV noise (±0.15). The augment strategy produced identical scores to baseline, meaning ElasticNet's L1 regularization (l1_ratio=0.99) already handles the multicollinearity by zeroing redundant hitting stats. PCA adds no information the existing regularization doesn't already exploit.
 
 ## Remaining Plausible Directions
 
